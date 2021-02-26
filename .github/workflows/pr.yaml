@@ -1,9 +1,7 @@
 name: Galaxy Tool Linting and Tests for push and PR
 on: [push, pull_request]
 env:
-  GALAXY_FORK: galaxyproject
-  GALAXY_BRANCH: release_21.01
-  MAX_CHUNKS: 4
+  ENV_FILE: .ci_env
 jobs:
   # the setup job does two things:
   # 1. cache the pip cache and .planemo
@@ -25,6 +23,13 @@ jobs:
       matrix:
         python-version: [3.7]
     steps:
+    - name: Import environment variables from a file
+      id: import-env
+      shell: bash
+      run: |
+          while read line; do
+            echo "$line" >> $GITHUB_ENV
+          done < ${{ env.ENV_FILE }}
     - name: Print github context properties
       run: |
         echo 'event: ${{ github.event_name }}'
@@ -68,7 +73,7 @@ jobs:
         create-cache: ${{ steps.cache-pip.outputs.cache-hit != 'true' || steps.cache-planemo.outputs.cache-hit != 'true' }}
         galaxy-fork: ${{ env.GALAXY_FORK }}
         galaxy-branch: ${{ env.GALAXY_BRANCH }}
-        max-chunks: ${{ env.MAX_CHUNKS }}
+        max-chunks: ${{ env.MAX_PR_CHUNKS }}
         python-version: ${{ matrix.python-version }}
     - name: Show commit range
       run: echo '${{ steps.discover.outputs.commit-range }}'

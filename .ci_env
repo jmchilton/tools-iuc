@@ -1,0 +1,4 @@
+GALAXY_FORK=galaxyproject
+GALAXY_BRANCH=release_21.01
+MAX_PR_CHUNKS=4
+UPSTREAM_OWNER=galaxyproject
